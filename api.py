@@ -2,16 +2,17 @@
 import requests
 import json
 
-URL_ROOT = 'http://loc.charitystock'
 user_data = {}
 
 # Open user.json file to get credentials
 with open('user.json') as user_file:
     user_data = json.load(user_file)
+
+url_root = user_data['api_url']
     
 def getCSRFToken():
     path = '/rest/session/token'
-    url = URL_ROOT + path 
+    url = url_root + path 
     r = requests.get(url)
     return r.text
 
@@ -20,7 +21,7 @@ def getCSRFToken():
 def record(CSRFToken, barcode):
 
     path = '/entity/node'
-    url = URL_ROOT + path
+    url = url_root + path
     
     # Construct the headers dict
     headers = { 
@@ -32,7 +33,7 @@ def record(CSRFToken, barcode):
     # Construct the data dict
     data = { '_links': {} }
     data['_links']['type'] = {}
-    data['_links']['type']['href'] = URL_ROOT + '/rest/type/node/scan'
+    data['_links']['type']['href'] = url_root + '/rest/type/node/scan'
     data['title'] = [ {'value': barcode} ]
     #print data
     
