@@ -9,13 +9,18 @@ with open('user.json') as user_file:
     user_data = json.load(user_file)
 
 url_root = user_data['api_url']
-    
+
+
+# Returns a string, blank if request failed
 def getCSRFToken():
     path = '/rest/session/token'
-    url = url_root + path 
-    r = requests.get(url)
-    return r.text
-
+    url = url_root + path
+    try:
+        r = requests.get(url)
+        return r.text
+    except:
+        return ''
+    
 
 # Query the API with this barcode
 def record(CSRFToken, barcode):
@@ -38,8 +43,16 @@ def record(CSRFToken, barcode):
     #print data
     
     # Make the API call
-    response = requests.post(url, auth=(user_data['user'], user_data['pass']), headers=headers, data=json.dumps(data) )
-    print response
-    #json = response.json()
-    #print json
+    try:
+        response = requests.post(url, auth=(user_data['user'], user_data['pass']), headers=headers, data=json.dumps(data) )
+    except:
+        return False
+    
+    #print response
+    if( response.status_code == 201 ):
+        return True
+    else:
+        return False
+
+
 

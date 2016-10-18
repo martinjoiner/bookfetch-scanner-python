@@ -1,20 +1,13 @@
 #!/usr/bin/env python
 
 import logging
-import api
 import db
 
-print "Obtaining CSRF token, please wait..."
-
-csrftoken = api.getCSRFToken()
-
-print "CSRF token obtained: " + csrftoken
-
 while True:
-    barcode = raw_input("Enter something: ")
+    barcode = raw_input("Scan ISBN: ")
     if ( len(barcode) > 1 ):
-        logging.info("Recording barcode: " + barcode)
-        print "Recording barcode: " + barcode
+        logging.info("Recording scanned ISBN: " + barcode)
+        print "Recording scanned ISBN: " + barcode
         db.recordScan(barcode, 1)
-        #api.record(csrftoken, barcode)
+        
 

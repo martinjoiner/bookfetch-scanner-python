@@ -16,20 +16,22 @@ else:
 
 
 # Open connection to SQLite dababase
-conn=sqlite3.connect(DB_FILE_NAME)
-curs = conn.cursor()
+def connect():
+    return sqlite3.connect(DB_FILE_NAME)
+    #curs = conn.cursor()
 
 
 # Check if scans table exists
 scansExists = 0
-for row in curs.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='scans'"):
+conn = connect();
+for row in conn.cursor().execute("SELECT name FROM sqlite_master WHERE type='table' AND name='scans'"):
     scansExists += 1
 
 
 # Create scans table if required
 if scansExists == 0:
     print "Creating scans table"
-    curs.execute( """CREATE TABLE scans(
+    conn.cursor().execute( """CREATE TABLE scans(
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               isbn TEXT NOT NULL,
               shop_id INT NOT NULL
@@ -39,15 +41,33 @@ if scansExists == 0:
 else:
     print "scans table exists"
 
+conn.close()
 
-# Print contents of scans table
-print "Contents of scans table:"
 
-for row in curs.execute("SELECT * FROM scans"):
-    print row
+# Returns a dict representing a 
+def frontQueueItem():
+    conn = connect()
+    for row in conn.cursor().execute("SELECT id, isbn, shop_id FROM scans ORDER BY id LIMIT 1"):
+        scan = {}
+        scan["id"] = row[0]
+        scan["isbn"] = row[1]
+        scan["shop_id"] = row[2]
+        conn.close()
+        return scan
+    conn.close()
 
-def recordScan(isbn, shop_id):
-    curs.execute("INSERT INTO scans ( isbn, shop_id ) VALUES ( '" + isbn + "', " + str(shop_id) + " )")
+
+# Deletes a row from the scan table
+def deleteQueueItem(id):
+    conn = connect()
+    conn.cursor().execute("DELETE FROM scans WHERE id = " + str(id) )
     conn.commit()
+    conn.close()
 
-#conn.close()
+
+# Adds an item to queue
+def recordScan(isbn, shop_id):
+    conn = connect()
+    conn.cursor().execute("INSERT INTO scans ( isbn, shop_id ) VALUES ( '" + isbn + "', " + str(shop_id) + " )")
+    conn.commit()
+    conn.close()
