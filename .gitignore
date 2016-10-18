@@ -1,2 +1,7 @@
 user.json
 
+#Ignore SQLite Database files
+*.db
+
+# Ignore Compiled Python
+*.pyc
