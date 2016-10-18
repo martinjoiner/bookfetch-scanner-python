@@ -16,7 +16,7 @@ def getCSRFToken():
     path = '/rest/session/token'
     url = url_root + path
     try:
-        r = requests.get(url)
+        r = requests.get(url, timeout=10)
         return r.text
     except:
         return ''
@@ -44,15 +44,17 @@ def record(CSRFToken, barcode):
     
     # Make the API call
     try:
-        response = requests.post(url, auth=(user_data['user'], user_data['pass']), headers=headers, data=json.dumps(data) )
+        response = requests.post(url,
+                                 auth=(user_data['user'], user_data['pass']),
+                                 headers=headers,
+                                 data=json.dumps(data),
+                                 timeout=10
+                            )
     except:
-        return False
+        return 404
     
-    #print response
-    if( response.status_code == 201 ):
-        return True
-    else:
-        return False
+    return response.status_code 
+
 
 
 

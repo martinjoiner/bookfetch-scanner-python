@@ -26,15 +26,21 @@ while True:
     
         # Attempt to POST to API
         print "Attempting POST to API"
-        if api.record(csrftoken, scan["isbn"]):
+        response_code = api.record(csrftoken, scan["isbn"])
+        if response_code == 403:
+            # Blank csrftoken to trigger obtaining of new one
+            csrftoken = ''
+            print "Request forbidden, waiting for 5 seconds..."
+            time.sleep(5)
+        elif response_code == 201:
             print "POST to API successful, deleting item from queue"
 
             # Delete the item from the queue
             db.deleteQueueItem( scan["id"] )
         else:
+            # Internet connection not available
             print "POST to API failed, waiting for 5 seconds..."
             time.sleep(5)
     else:
         print "Nothing in queue, waiting for 5 seconds..."
-        # If failed, wait 20 seconds
         time.sleep(5)
