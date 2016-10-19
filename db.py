@@ -67,7 +67,8 @@ def deleteQueueItem(id):
 
 # Adds an item to queue
 def recordScan(isbn, shop_id):
+    insert = "INSERT INTO scans ( isbn, shop_id ) VALUES ( ?, ? )"
     conn = connect()
-    conn.cursor().execute("INSERT INTO scans ( isbn, shop_id ) VALUES ( '" + isbn + "', " + str(shop_id) + " )")
+    conn.cursor().execute(insert, [isbn, shop_id])
     conn.commit()
     conn.close()
