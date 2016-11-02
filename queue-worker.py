@@ -26,7 +26,7 @@ while True:
     
         # Attempt to POST to API
         print "Attempting POST to API"
-        response_code = api.record(csrftoken, scan["isbn"])
+        response_code = api.record(csrftoken, scan["shop_code"], scan["isbn"])
         if response_code == 403:
             # Blank csrftoken to trigger obtaining of new one
             csrftoken = ''

@@ -34,7 +34,7 @@ if scansExists == 0:
     conn.cursor().execute( """CREATE TABLE scans(
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               isbn TEXT NOT NULL,
-              shop_id INT NOT NULL
+              shop_code TEXT NOT NULL
               )"""
     )
     conn.commit()
@@ -47,11 +47,11 @@ conn.close()
 # Returns a dict representing a 
 def frontQueueItem():
     conn = connect()
-    for row in conn.cursor().execute("SELECT id, isbn, shop_id FROM scans ORDER BY id LIMIT 1"):
+    for row in conn.cursor().execute("SELECT id, isbn, shop_code FROM scans ORDER BY id LIMIT 1"):
         scan = {}
         scan["id"] = row[0]
         scan["isbn"] = row[1]
-        scan["shop_id"] = row[2]
+        scan["shop_code"] = row[2]
         conn.close()
         return scan
     conn.close()
@@ -66,9 +66,9 @@ def deleteQueueItem(id):
 
 
 # Adds an item to queue
-def recordScan(isbn, shop_id):
-    insert = "INSERT INTO scans ( isbn, shop_id ) VALUES ( ?, ? )"
+def recordScan(isbn, shop_code):
+    insert = "INSERT INTO scans ( isbn, shop_code ) VALUES ( ?, ? )"
     conn = connect()
-    conn.cursor().execute(insert, [isbn, shop_id])
+    conn.cursor().execute(insert, [isbn, shop_code])
     conn.commit()
     conn.close()

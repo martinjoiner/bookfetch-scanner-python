@@ -22,8 +22,8 @@ def getCSRFToken():
         return ''
     
 
-# Query the API with this barcode
-def record(CSRFToken, barcode):
+# POST a new 'scan' to the API 
+def record(CSRFToken, shop_code, isbn):
 
     path = '/entity/node'
     url = url_root + path
@@ -39,8 +39,9 @@ def record(CSRFToken, barcode):
     data = { '_links': {} }
     data['_links']['type'] = {}
     data['_links']['type']['href'] = url_root + '/rest/type/node/scan'
-    data['title'] = [ {'value': barcode} ]
-    #print data
+    data['title'] = [ {'value': isbn} ]
+    data['field_scan_shop_code'] = [ {'value': shop_code} ]
+
     
     # Make the API call
     try:

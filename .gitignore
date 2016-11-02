@@ -5,3 +5,6 @@ user.json
 
 # Ignore Compiled Python
 *.pyc
+
+# Ignore .temp 
+*.temp
