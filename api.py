@@ -10,45 +10,58 @@ with open('user.json') as user_file:
 
 url_root = user_data['api_url']
 
+headers = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'User-Agent': 'BookFetch Roaming Scanner v1.0'
+}
 
 # Returns a string, blank if request failed
-def getCSRFToken():
-    path = '/rest/session/token'
-    url = url_root + path
+def getAccessToken():
+    
+    url = url_root + '/oauth/token'
+
+    # Construct the data dict
+    data = {
+        'grant_type': 'password',
+        'client_id': user_data['client_id'],
+        'client_secret': user_data['client_secret'],
+        'username': user_data['username'],
+        'password': user_data['password'],
+        'scope': ''
+    }
+    
     try:
-        r = requests.get(url, timeout=10)
-        return r.text
+        r = requests.post(  url,
+                            headers=headers,
+                            data=data,
+                            timeout=10)
+
+        rVals = json.loads(r.text)
+        return rVals['access_token']
     except:
         return ''
     
 
 # POST a new 'scan' to the API 
-def record(CSRFToken, shop_code, isbn):
+def record(access_token, shop_code, isbn):
 
-    path = '/entity/node'
-    url = url_root + path
+    url = url_root + '/api/scan'
     
     # Construct the headers dict
-    headers = { 
-        'Content-Type': 'application/hal+json',
-        'X-CSRF-Token': CSRFToken
-    }
-    #print headers
+    authheaders = headers
+    authheaders['Authorization'] = 'Bearer ' + access_token
     
     # Construct the data dict
-    data = { '_links': {} }
-    data['_links']['type'] = {}
-    data['_links']['type']['href'] = url_root + '/rest/type/node/scan'
-    data['title'] = [ {'value': isbn} ]
-    data['field_scan_shop_code'] = [ {'value': shop_code} ]
-
+    data = {
+        'isbn': isbn,
+        'shop_code': shop_code
+    }
     
     # Make the API call
     try:
         response = requests.post(url,
-                                 auth=(user_data['user'], user_data['pass']),
-                                 headers=headers,
-                                 data=json.dumps(data),
+                                 headers=authheaders,
+                                 data=data,
                                  timeout=10
                             )
     except:

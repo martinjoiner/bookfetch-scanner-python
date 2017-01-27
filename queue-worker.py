@@ -4,20 +4,20 @@ import db
 import api
 import time
 
-csrftoken = ''
+access_token = ''
 
 while True:
 
-    if len(csrftoken) == 0:
-        print "Obtaining CSRF token, please wait..."
-        csrftoken = api.getCSRFToken()
+    if len(access_token) == 0:
+        print "Obtaining Access token, please wait..."
+        access_token = api.getAccessToken()
     
-        if len(csrftoken) == 0:
-            print "CSRF token could not be obtained, waiting for 5 seconds"
+        if len(access_token) == 0:
+            print "Access token could not be obtained, waiting for 5 seconds"
             time.sleep(5)
             continue
         else:
-            print "CSRF token obtained: " + csrftoken
+            print "Access token obtained: " + access_token
     
     # Check if there are items in the queue
     scan = db.frontQueueItem()
@@ -26,12 +26,15 @@ while True:
     
         # Attempt to POST to API
         print "Attempting POST to API"
-        response_code = api.record(csrftoken, scan["shop_code"], scan["isbn"])
+        response_code = api.record(access_token, scan["shop_code"], scan["isbn"])
         if response_code == 403:
-            # Blank csrftoken to trigger obtaining of new one
-            csrftoken = ''
+            # Blank access_token to trigger obtaining of new one
+            access_token = ''
             print "Request forbidden, waiting for 5 seconds..."
             time.sleep(5)
+        elif response_code == 405:
+            print "405 Method not allowed, waiting for 5 minutes..."
+            time.sleep(300)
         elif response_code == 201:
             print "POST to API successful, deleting item from queue"
 

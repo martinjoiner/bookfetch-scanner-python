@@ -1,6 +1,8 @@
 {
-    "api_url": "http://example.com",
-    "user": "",
-    "pass": ""
+    "api_url": "http://bookfetch.co.uk",
+    "client_id": "",
+    "client_secret": "",
+    "username": "",
+    "password": ""
 }
 
